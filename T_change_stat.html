@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Calculate Statistics of Vegetation Change</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Vegetation Classification Tutorial</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Background Information
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="B_project.html">Vegetation Succession</a>
+    </li>
+    <li>
+      <a href="B_specimg.html">Spectral Imagery</a>
+    </li>
+    <li>
+      <a href="B_LiDAR.html">LiDAR Data</a>
+    </li>
+    <li>
+      <a href="B_class.html">Classification Method</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Graphical User Interface
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="GUI.html">Instructions</a>
+    </li>
+    <li>
+      <a href="results.html">Example Results</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Tutorial
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="T_preproc_poly.html">Define Study Area and Training Data</a>
+    </li>
+    <li>
+      <a href="T_preproc_LiDAR.html">Preprocessing LiDAR</a>
+    </li>
+    <li>
+      <a href="T_veg_class.html">Classifying Vegetation</a>
+    </li>
+    <li>
+      <a href="T_veg_change.html">Calculating Vegetation Succession</a>
+    </li>
+    <li>
+      <a href="T_change_sep.html">Calculating Vegetation Change per Class</a>
+    </li>
+    <li>
+      <a href="T_Leaflet.html">Creating an Interactive Map</a>
+    </li>
+    <li>
+      <a href="T_change_stat.html">Statistical Analysis</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Calculate Statistics of Vegetation Change</h1>
+
+</div>
+
+
+<p>To gain insight into the absolute changes in the amount of change, and not just the location of it combined with a visual assessment, it is possible to calculate the percentages of vegetation change. The following example calculates these, and proceeds to plot it, both in a bargraph and in a change matrix.</p>
+<hr />
+<div id="calculate-the-percentage-of-each-vegetation-cover-during-each-year" class="section level3">
+<h3>Calculate the Percentage of each Vegetation Cover During each Year</h3>
+<p>First, we calculate the percentage of pixels in each vegetation cover class for each year. This is done in the script as shown below. The rasters are imported. Then a loop is build in order to count the number of pixels within each class for both years separately. This is done in a loop, because this way we can get a result of 0 in those classes which have no pixels represented in one or both of the years. That is important, because it will allow us to calculate a 0 percentage cover, instead of non-available data.</p>
+<p>Next, the script will sum the amount of pixels as calculated. Using this number as a total area, it proceeds to calculate the percentage of each vegetation class in a vectors for each year.</p>
+<pre class="r"><code>year_1 = raster(&quot;Tutorial_files/veg_klompenwaard_year1.tif&quot;, convert = TRUE)
+year_2 = raster(&quot;Tutorial_files/veg_klompenwaard_year2.tif&quot;, convert = TRUE)
+
+# Count stable and unstable pixels
+freq_veg_year1 = c()
+freq_veg_year2 = c()
+
+for (i in seq(1,5,1)){
+  freq_year1 = freq(year_1, digits = 2, value = (i), useNA = &quot;no&quot;)
+  freq_veg_year1 = c(freq_veg_year1,freq_year1)
+  freq_year2 = freq(year_2, digits = 2, value = (i), useNA = &quot;no&quot;)
+  freq_veg_year2 = c(freq_veg_year2,freq_year2)
+
+}
+
+# Calculate percentage of veg (change) and plot
+year1_sum = sum(freq_veg_year1)
+year1_per = c(freq_veg_year1/year1_sum*100)
+year2_sum = sum(freq_veg_year2)
+year2_per = c(freq_veg_year2/year2_sum*100)</code></pre>
+<p>The result will be a barplot or a matrix, depending on the users preference, as shown below. ## add matrix</p>
+<p><img src="T_change_stat_files/figure-html/show%20plots%20of%20percentage-1.png" width="576" /></p>
+<hr />
+</div>
+<div id="calculate-the-percentage-of-stable-and-unstable-vegetation" class="section level3">
+<h3>Calculate the Percentage of Stable and Unstable Vegetation</h3>
+<p>The second part of this tutorial will calculate the percentage of the stable and unstable vegetation from the stability raster which is calculated. This is done in the same way as previously explained for the vegetation types. This time it is not before. done within a loop, because that is not necessary as we will always have some stable and some unstable vegetation.</p>
+<p>Again, the user will be able to see a barplot or a matrix of the calculated statistics.</p>
+<pre class="r"><code># Import stable map
+veg_stable = raster(&quot;klompenwaard_stable.tif&quot;, convert = TRUE)
+
+# Count stable and unstable pixels
+freq_stable = freq(veg_stable, digits = 0, useNA = &quot;no&quot;)
+
+# Calculate percentage of stable and unstable pixels
+n_stable = freq_stable [2,2]
+n_unstable = freq_stable [3,2]
+n_total = n_stable + n_unstable
+
+per_stable = (n_stable/n_total)*100
+per_unstable = (n_unstable/n_total)*100</code></pre>
+<hr />
+</div>
+<div id="create-a-change-matrix" class="section level3">
+<h3>Create a Change Matrix</h3>
+<p>The change matrix can be calculated using the function <em>get_change_stat</em>. It is defined below. As arguments, it takes the the two previously created change raster datasets, the number of classes and the names of the classes. Please note that the lower part of the function aims to restructure the resulting matrix. The calculation is carried out in the first part.</p>
+<pre class="r"><code># Load the change rasters
+change_raster &lt;- raster(&quot;Tutorial_files/changes_binary.tif&quot;)
+differences &lt;- raster(&quot;Tutorial_files/changes.tif&quot;)
+
+load(&quot;Tutorial_files/leaflets.RData&quot;)
+
+# Define the function
+
+get_change_stat &lt;- function(change_raster,differences,nclasses,clas_poly1,clas_poly2){
+nclasses_pol2&lt;- length(clas_poly2)
+# Count stable and unstable pixels
+freq_stable = freq(change_raster)
+# Calculate percentage of stable and unstable pixels
+n_stable = freq_stable [2,2]
+n_unstable = freq_stable [3,2]
+n_total = n_stable + n_unstable
+
+per_stable = (n_stable/n_total)*100
+per_unstable = (n_unstable/n_total)*100
+
+# Plot distribution of stable and unstable
+stability = round(c(per_stable, per_unstable), digits=2)
+col = c(&quot;lightgreen&quot;, &quot;red&quot;)
+
+
+frequencies = c()
+
+for (i in seq(10,nclasses*10,10)){
+  for (j in (1:nclasses)){
+    freq_change = freq(differences, digits = 2, value = (i+j), useNA = &quot;no&quot;)
+    frequencies = c(frequencies,freq_change)
+  }
+}
+
+changematrix2 &lt;- matrix(frequencies,ncol = nclasses_pol2)
+colnames(changematrix2)&lt;-clas_poly2
+rownames(changematrix2)&lt;-clas_poly1
+
+# Restructure matrix
+total &lt;- sum(changematrix2)
+changematrix&lt;-cbind(changematrix2,rowSums(changematrix2))
+changematrix&lt;-cbind(changematrix,rowSums(changematrix2)/total*100)
+changematrix&lt;-rbind(changematrix,colSums(changematrix2))
+changematrix&lt;-rbind(changematrix,colSums(changematrix2)/total*100)
+
+colnames(changematrix)[(nclasses+1):(nclasses+2)] &lt;- c(&quot;area_m2_year1&quot;,&quot;area_percent_year1&quot;) 
+rownames(changematrix)[(nclasses_pol2+1):(nclasses_pol2+2)] &lt;- c(&quot;area_m2_year2&quot;,&quot;area_percent_year2&quot;)
+changematrix[(nclasses_pol2+1),(nclasses+1)]&lt;-sum(changematrix[,nclasses_pol2+1][1:nclasses+1])
+changematrix[(nclasses_pol2+2),(nclasses+2)]&lt;-100
+changematrix[(nclasses_pol2+1),(nclasses+2)]&lt;-NA
+changematrix[(nclasses_pol2+2),(nclasses+1)]&lt;-NA
+changematrix&lt;&lt;-round(changematrix,2)
+
+return(list(changematrix,stability))
+
+}</code></pre>
+<p>After we defined the function, we only have run it. We write the result in a new object called <em>matrix</em>. The command <code>matrix[[1]]</code> is then used to display the results.</p>
+<pre class="r"><code>matrix &lt;- get_change_stat(change_raster, differences, nclasses, class_names_1, class_names_2)
+
+matrix[[1]]</code></pre>
+<pre><code>##                           grass         sand        shrub         tree
+## grass              285458.00000    297.00000   2506.00000  9425.000000
+## sand                 3184.00000 152008.00000      0.00000  4713.000000
+## shrub                7687.00000      1.00000 147752.00000  3981.000000
+## tree               134029.00000   2793.00000  30525.00000 75787.000000
+## water                   6.00000    900.00000      0.00000   422.000000
+## area_m2_year2      430364.00000 155999.00000 180783.00000 94328.000000
+## area_percent_year2     40.11981     14.54269     16.85313     8.793536
+##                           water area_m2_year1 area_percent_year1
+## grass                   0.00000        297686           27.75117
+## sand                  958.00000        160863           14.99613
+## shrub                   0.00000        159421           14.86170
+## tree                  130.00000        243264           22.67779
+## water              210135.00000        211463           19.71321
+## area_m2_year2      211223.00000       1205375                 NA
+## area_percent_year2     19.69084            NA          100.00000</code></pre>
+<hr />
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

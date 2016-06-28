@@ -1,0 +1,165 @@
+---
+title: "Calculate Statistics of Vegetation Change"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+To gain insight into the absolute changes in the amount of change, and not just the location of it combined with a visual assessment, it is possible to calculate the percentages of vegetation change. The following example calculates these, and proceeds to plot it, both in a bargraph and in a change matrix.
+
+```{r load packages, include=FALSE, message=FALSE}
+#setwd("/Users/felix/Documents/Umweltwissenschaft/Wageningen/Tutorial/Tutorial_files") # Set to working directory
+library(raster)
+library(tiff)
+library(rgdal)
+library(leaflet)
+library(htmlwidgets)
+```
+***
+### Calculate the Percentage of each Vegetation Cover During each Year
+First, we calculate the percentage of pixels in each vegetation cover class for each year. This is done in the script as shown below. The rasters are imported. Then a loop is build in order to count the number of pixels within each class for both years separately. This is done in a loop, because this way we can get a result of 0 in those classes which have no pixels represented in one or both of the years. That is important, because it will allow us to calculate a 0 percentage cover, instead of non-available data.
+
+Next, the script will sum the amount of pixels as calculated. Using this number as a total area, it proceeds to calculate the percentage of each vegetation class in a vectors for each year.
+
+```{r calculate yearly percentage, echo=TRUE, message= FALSE, warning=FALSE}
+year_1 = raster("Tutorial_files/veg_klompenwaard_year1.tif", convert = TRUE)
+year_2 = raster("Tutorial_files/veg_klompenwaard_year2.tif", convert = TRUE)
+
+# Count stable and unstable pixels
+freq_veg_year1 = c()
+freq_veg_year2 = c()
+
+for (i in seq(1,5,1)){
+  freq_year1 = freq(year_1, digits = 2, value = (i), useNA = "no")
+  freq_veg_year1 = c(freq_veg_year1,freq_year1)
+  freq_year2 = freq(year_2, digits = 2, value = (i), useNA = "no")
+  freq_veg_year2 = c(freq_veg_year2,freq_year2)
+
+}
+
+# Calculate percentage of veg (change) and plot
+year1_sum = sum(freq_veg_year1)
+year1_per = c(freq_veg_year1/year1_sum*100)
+year2_sum = sum(freq_veg_year2)
+year2_per = c(freq_veg_year2/year2_sum*100)
+```
+
+The result will be a barplot or a matrix, depending on the users preference, as shown below.
+## add matrix
+
+```{r show plots of percentage, echo=FALSE, message= FALSE, warning=FALSE, fig.height=4, fig.width=6}
+percentages = rbind(year1_per, year2_per)
+
+labels = c("grass 1","grass 2", "shrub 1","shrub 2", "trees 1","trees 2", 
+           "soil 1","soil 2", "water 1","water 2")
+valuelabels = c(1.5,2.5,  4.5,5.5,  7.5,8.5,  10.5,11.5,  13.5,14.5)
+
+barplot(percentages, col = c("lightgreen","lightgreen","orange","orange","violet","violet", 
+                             "peru","peru","royalblue","royalblue"), 
+        main = "Vegetation cover",
+        names.arg = labels, ylim=c(0,100), beside = TRUE)
+text(valuelabels, percentages,
+     label = round(percentages,digits=2),
+     adj = c(1,0), pos=1, offset =-1, srt=0, cex = 0.7, xpd = TRUE)
+```
+
+***
+### Calculate the Percentage of Stable and Unstable Vegetation
+The second part of this tutorial will calculate the percentage of the stable and unstable vegetation from the stability raster which is calculated. This is done in the same way as previously explained for the vegetation types. This time it is not before. done within a loop, because that is not necessary as we will always have some stable and some unstable vegetation.
+
+Again, the user will be able to see a barplot or a matrix of the calculated statistics.
+
+```{r calculate stable percentage, echo=TRUE, message= FALSE, warning=FALSE}
+# Import stable map
+veg_stable = raster("klompenwaard_stable.tif", convert = TRUE)
+
+# Count stable and unstable pixels
+freq_stable = freq(veg_stable, digits = 0, useNA = "no")
+
+# Calculate percentage of stable and unstable pixels
+n_stable = freq_stable [2,2]
+n_unstable = freq_stable [3,2]
+n_total = n_stable + n_unstable
+
+per_stable = (n_stable/n_total)*100
+per_unstable = (n_unstable/n_total)*100
+```
+
+***
+### Create a Change Matrix
+
+The change matrix can be calculated using the function *get_change_stat*. It is defined below. As arguments, it takes the the two previously created change raster datasets, the number of classes and the names of the classes.
+Please note that the lower part of the function aims to restructure the resulting matrix. The calculation is carried out in the first part.
+
+```{r, stat, warnings=FALSE}
+
+# Load the change rasters
+change_raster <- raster("Tutorial_files/changes_binary.tif")
+differences <- raster("Tutorial_files/changes.tif")
+
+load("Tutorial_files/leaflets.RData")
+
+# Define the function
+
+get_change_stat <- function(change_raster,differences,nclasses,clas_poly1,clas_poly2){
+nclasses_pol2<- length(clas_poly2)
+# Count stable and unstable pixels
+freq_stable = freq(change_raster)
+# Calculate percentage of stable and unstable pixels
+n_stable = freq_stable [2,2]
+n_unstable = freq_stable [3,2]
+n_total = n_stable + n_unstable
+
+per_stable = (n_stable/n_total)*100
+per_unstable = (n_unstable/n_total)*100
+
+# Plot distribution of stable and unstable
+stability = round(c(per_stable, per_unstable), digits=2)
+col = c("lightgreen", "red")
+
+
+frequencies = c()
+
+for (i in seq(10,nclasses*10,10)){
+  for (j in (1:nclasses)){
+    freq_change = freq(differences, digits = 2, value = (i+j), useNA = "no")
+    frequencies = c(frequencies,freq_change)
+  }
+}
+
+changematrix2 <- matrix(frequencies,ncol = nclasses_pol2)
+colnames(changematrix2)<-clas_poly2
+rownames(changematrix2)<-clas_poly1
+
+# Restructure matrix
+total <- sum(changematrix2)
+changematrix<-cbind(changematrix2,rowSums(changematrix2))
+changematrix<-cbind(changematrix,rowSums(changematrix2)/total*100)
+changematrix<-rbind(changematrix,colSums(changematrix2))
+changematrix<-rbind(changematrix,colSums(changematrix2)/total*100)
+
+colnames(changematrix)[(nclasses+1):(nclasses+2)] <- c("area_m2_year1","area_percent_year1") 
+rownames(changematrix)[(nclasses_pol2+1):(nclasses_pol2+2)] <- c("area_m2_year2","area_percent_year2")
+changematrix[(nclasses_pol2+1),(nclasses+1)]<-sum(changematrix[,nclasses_pol2+1][1:nclasses+1])
+changematrix[(nclasses_pol2+2),(nclasses+2)]<-100
+changematrix[(nclasses_pol2+1),(nclasses+2)]<-NA
+changematrix[(nclasses_pol2+2),(nclasses+1)]<-NA
+changematrix<<-round(changematrix,2)
+
+return(list(changematrix,stability))
+
+}
+
+```
+
+After we defined the function, we only have run it. We write the result in a new object called *matrix*. The command `matrix[[1]]` is then used to display the results.
+
+```{r, change matrix, warning=FALSE, message=FALSE}
+matrix <- get_change_stat(change_raster, differences, nclasses, class_names_1, class_names_2)
+
+matrix[[1]]
+````
+
+***
