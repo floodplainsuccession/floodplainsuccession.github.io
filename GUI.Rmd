@@ -5,7 +5,23 @@ output: html_document
 
 This is the explanation on how to use the [application](https://github.com/floodplainsuccession/classificationapplication) to create vegetation maps. 
 The first step is to download the application. On the Github page, click on *clone or download* and then choose *Download zip*.
-Then unzip the folder. 
+Then unzip the folder. Open the file *Veg_class_flood_plains.Rproj*.
+To install the required packages, copy the following code to the console and run it.
+
+```{r, packages, eval=FALSE}
+## Install and load the required packages 
+## This is only necessary if they are not installed yet
+install.packages("raster")
+install.packages("rgdal")
+install.packages("randomForest")
+install.packages("leaflet")
+install.packages("rLiDAR")
+install.packages("htmlwidgets")
+install.packages("gWidgetstcltk")
+
+```
+
+
 To start the program. Open the file *VegetationClassification.RData*. 
 The main window will pop up. It can be seen below.
 
@@ -21,23 +37,12 @@ If you run the programme twice, the results will be overwritten. To avoid this, 
 
 ***
 
-If you are more interested and want to start the GUI directly inside RStudio, open the file *Veg_class_flood_plains.Rproj*. 
-Then, choose the file *Starting_the_GUI.R* from the lower right window. It looks like shown below.
+If you are more interested and want to start the GUI directly inside RStudio, choose the file *Starting_the_GUI.R* from the lower right window after opening the file *Veg_class_flood_plains.Rproj* . It looks like shown below.
 
 
 ```{r, GUI, eval=FALSE}
 
-## Install and load the required packages 
-## This is only necessary if they are not installed yet
-install.packages("raster")
-install.packages("rgdal")
-install.packages("randomForest")
-install.packages("leaflet")
-install.packages("rLiDAR")
-install.packages("htmlwidgets")
-install.packages("gWidgetstcltk")
-
-### run these first to load the functions
+### Run these first to load the functions
 source('Functions/main_processing.R')
 source('Functions/GUI_setup.R')
 

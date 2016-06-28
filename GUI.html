@@ -260,7 +260,17 @@ $(document).ready(function () {
 </div>
 
 
-<p>This is the explanation on how to use the <a href="https://github.com/floodplainsuccession/classificationapplication">application</a> to create vegetation maps. The first step is to download the application. On the Github page, click on <em>clone or download</em> and then choose <em>Download zip</em>. Then unzip the folder. To start the program. Open the file <em>VegetationClassification.RData</em>. The main window will pop up. It can be seen below.</p>
+<p>This is the explanation on how to use the <a href="https://github.com/floodplainsuccession/classificationapplication">application</a> to create vegetation maps. The first step is to download the application. On the Github page, click on <em>clone or download</em> and then choose <em>Download zip</em>. Then unzip the folder. Open the file <em>Veg_class_flood_plains.Rproj</em>. To install the required packages, copy the following code to the console and run it.</p>
+<pre class="r"><code>## Install and load the required packages 
+## This is only necessary if they are not installed yet
+install.packages(&quot;raster&quot;)
+install.packages(&quot;rgdal&quot;)
+install.packages(&quot;randomForest&quot;)
+install.packages(&quot;leaflet&quot;)
+install.packages(&quot;rLiDAR&quot;)
+install.packages(&quot;htmlwidgets&quot;)
+install.packages(&quot;gWidgetstcltk&quot;)</code></pre>
+<p>To start the program. Open the file <em>VegetationClassification.RData</em>. The main window will pop up. It can be seen below.</p>
 <center>
 <img src="figures/GUI.PNG" width="910" height="500" />
 </center>
@@ -270,18 +280,8 @@ $(document).ready(function () {
 <p>Another optional function is the inclusion of LiDAR data into the classification. If LiDAR data is available, you can upload it in the fields <em>Upload LiDAR File 1</em> for the first image and <em>Upload LiDAR File 2</em> for the second image, respectively.</p>
 <p>If you run the programme twice, the results will be overwritten. To avoid this, export them to another folder or change the names of the files.</p>
 <hr />
-<p>If you are more interested and want to start the GUI directly inside RStudio, open the file <em>Veg_class_flood_plains.Rproj</em>. Then, choose the file <em>Starting_the_GUI.R</em> from the lower right window. It looks like shown below.</p>
-<pre class="r"><code>## Install and load the required packages 
-## This is only necessary if they are not installed yet
-install.packages(&quot;raster&quot;)
-install.packages(&quot;rgdal&quot;)
-install.packages(&quot;randomForest&quot;)
-install.packages(&quot;leaflet&quot;)
-install.packages(&quot;rLiDAR&quot;)
-install.packages(&quot;htmlwidgets&quot;)
-install.packages(&quot;gWidgetstcltk&quot;)
-
-### run these first to load the functions
+<p>If you are more interested and want to start the GUI directly inside RStudio, choose the file <em>Starting_the_GUI.R</em> from the lower right window after opening the file <em>Veg_class_flood_plains.Rproj</em> . It looks like shown below.</p>
+<pre class="r"><code>### Run these first to load the functions
 source(&#39;Functions/main_processing.R&#39;)
 source(&#39;Functions/GUI_setup.R&#39;)
 
